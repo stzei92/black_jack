@@ -1,3 +1,8 @@
+/*
+Author: Stefan Zeisl
+Date: 12.04.2026
+Version: 0.1
+*/
 pub mod card;
 
 use card::Card;
