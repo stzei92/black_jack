@@ -94,18 +94,8 @@ fn game_loop() {
     //Create the Players Hand
     let mut hand_player:Vec<Card> = vec![];
 
-    //Dealer Draws first card
-    let mut card = deal(&mut hand_dealer, &mut deck);
-    prompt(String::from(format!("Dealers open card: {}",card.to_string())));
-
-
-    //Dealer Draws second card
-    deal(&mut hand_dealer, &mut deck);
-    let mut dealer_value:usize = count_values(&hand_dealer);
-    prompt(String::from("Dealers draws his closed card."));
-
     //Player draws first card
-    card = deal(&mut hand_player, &mut deck);
+    let mut card = deal(&mut hand_player, &mut deck);
     prompt(String::from(format!("Players draws a card: {}",card.to_string())));
 
     //Player draws second card
@@ -117,49 +107,76 @@ fn game_loop() {
     let mut player_value:usize = count_values(&hand_player);
     prompt(String::from(format!("The players hand value is {}.",player_value)));
 
+    //Dealer Draws first card
+    card = deal(&mut hand_dealer, &mut deck);
+    prompt(String::from(format!("Dealers open card: {}",card.to_string())));
+
+
+    //Dealer Draws second card
+    deal(&mut hand_dealer, &mut deck);
+    let mut dealer_value:usize = count_values(&hand_dealer);
+    prompt(String::from("Dealers draws his closed card."));
+
     let mut next = String::new();
 
 
     loop {
-        if player_value < 21 {
-            next = prompt(String::from("Deal or Stand? "));
-        }
-        else {
-            next = String::from("Stand");
-        }
-        if next == "Deal" {
-            //Dealer Draws card
-            card = deal(&mut hand_dealer, &mut deck);
-            prompt(String::from("Players Turn."));
 
+        next = prompt(String::from("Hit or Stand? "));
+        match next.to_uppercase().as_str() {
+            "HIT" => prompt(String::from("Players hits.")),
+            "STAND" => prompt(String::from("Players stands.")),
+            _ => return,
+        };
+
+        if next == "Hit" {
             //Player draws card
             card = deal(&mut hand_player, &mut deck);
             println!("Players draws a card: {}",card.to_string());
-            println!("Players hand: {}",hand_to_string(&hand_player));
+            prompt(String::from(format!("Players hand: {}",hand_to_string(&hand_player))));
             //Count Players Hand
             player_value = count_values(&hand_player);
-            println!("The players hand value is {}.",player_value);
-            prompt(String::from("Next Round."));
-        }
-        else{
-            dealer_value = count_values(&hand_dealer);
-            player_value = count_values(&hand_player);
-            println!("The dealers hand is {}. Value {}.",hand_to_string(&hand_dealer),dealer_value);
-            println!("The players hand is {}. Value {}.",hand_to_string(&hand_player),player_value);
             if player_value > 21 {
+                prompt(String::from(format!("The players hand value is {}.",player_value)));
                 println!("Dealer wins!");
+                break;
             }
-            else if dealer_value > player_value {
-                    println!("Dealer wins!");
+
+        }
+
+            player_value = count_values(&hand_player);
+            println!("The players hand is {}. Value {}.",hand_to_string(&hand_player),player_value);
+
+            //Dealer's turn
+            prompt(String::from("Dealers Turn."));
+            prompt(String::from(format!("The dealers hand is {}. Value {}.",hand_to_string(&hand_dealer),dealer_value)));
+            if dealer_value <=16 {
+                card = deal(&mut hand_dealer, &mut deck);
+                dealer_value = count_values(&hand_dealer);
+                prompt(String::from(format!("Dealer hits: {}. The dealers hand is {}. Value {}.",card.to_string(),hand_to_string(&hand_dealer),dealer_value)));
+                if dealer_value > 21 {
+                    println!("Player wins!");
+                    break;
                 }
-            else if player_value > dealer_value {
-                println!("Player wins!");
             }
             else {
-                println!("It's a tie!");
+                prompt(String::from("Dealer stands."));
             }
-            break;
-        }
+
+            if (next == "Stand") | (dealer_value==21) | (player_value==21) {
+                if dealer_value > player_value {
+                println!("Dealer wins!");
+                    }
+                else if player_value > dealer_value {
+                    println!("Player wins!");
+                }
+                else {
+                    println!("It's a tie!");
+                }
+                break;
+            }
+
+            prompt(String::from("Next Round."));
     }
 }
 
