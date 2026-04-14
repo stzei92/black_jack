@@ -5,3 +5,7 @@ edition = "2024"
 
 [dependencies]
 rand = "0.10.1"
+
+[target.x86_64-pc-windows-gnu]
+linker = "x86_64-w64-mingw32-gcc"
+ar = "x86_64-w64-mingw32-gcc-ar"
